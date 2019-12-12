@@ -1,0 +1,5 @@
+﻿  Player.cpp
+C:\Users\olle.kaiser\Desktop\SDLTesting2\Player.cpp(40,40): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\olle.kaiser\Desktop\SDLTesting2\Player.cpp(41,67): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+C:\Users\olle.kaiser\Desktop\SDLTesting2\Player.cpp(42,67): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+  SDLTesting2.vcxproj -> C:\Users\olle.kaiser\Desktop\SDLTesting2\x64\Debug\SDLTesting2.exe

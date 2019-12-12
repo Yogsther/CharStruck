@@ -1,4 +1,4 @@
-var textures = ["green.png", "red.png", "blue.png", "purple.png"];
+var textures = ["green.png", "red.png", "blue.png", "purple.png", "dark.png"];
 
 for (var texture of textures) {
     var src = texture;
@@ -9,6 +9,7 @@ for (var texture of textures) {
 }
 
 const COLORS = {
+    dark: textures.dark,
     red: textures.red,
     blue: textures.blue,
     green: textures.green,
