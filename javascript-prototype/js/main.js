@@ -14,6 +14,8 @@ var player = {
 	MAX_SPEED: 10
 };
 
+var world = [];
+
 var camera = {
 	position: { x: 0, y: 0 }
 };
@@ -22,6 +24,7 @@ window.onload = () => {
 	resizeCanvas();
 	loop();
 };
+
 window.onresize = resizeCanvas;
 
 function resizeCanvas() {
@@ -35,13 +38,13 @@ document.body.appendChild(canvas);
 function loop() {
 	logic();
 	render();
-
 	requestAnimationFrame(loop);
 }
 
 var keysDown = [];
 document.body.addEventListener("keydown", e => {
 	keysDown[e.keyCode] = true;
+	console.log(e.keyCode);
 });
 
 document.body.addEventListener("keyup", e => {
@@ -73,6 +76,10 @@ function cameraLogic() {
 
 function logic() {
 	cameraLogic();
+
+	if (keysDown[32]) {
+		world.push(new Bullet(player.position.x, player.position.y));
+	}
 
 	if (keysDown[87] || keysDown[83] || keysDown[65] || keysDown[68]) {
 		player.moving = true;
@@ -110,12 +117,13 @@ function logic() {
 
 	player.speed -= player.friction;
 	if (player.speed < 0) player.speed = 0;
+
+	for (item of world) {
+		item.logic();
+	}
 }
 
 function render() {
-	ctx.fillStyle = "black";
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
-
 	var size = 5;
 	var tileWidth = "GROUND".length * SCALE * 8 * size;
 	var tileHeight = SCALE * 8 * size;
@@ -129,9 +137,14 @@ function render() {
 				y - (camera.position.y % tileWidth),
 				size * SCALE,
 				COLORS.dark,
+				false,
 				false
 			);
 		}
+	}
+
+	for (item of world) {
+		item.draw();
 	}
 
 	Alphabet.drawBlock(
@@ -145,7 +158,6 @@ function render() {
 		true,
 		true
 	);
-	Alphabet.drawBlock("CENTER", 0, 0, 10, 10, COLORS.green);
 }
 
 function draw(
@@ -158,11 +170,17 @@ function draw(
 	y,
 	w,
 	h,
-	boundByCamera = true
+	boundByCamera = true,
+	centered = true
 ) {
 	if (boundByCamera) {
 		x = x - camera.position.x;
 		y = y - camera.position.y;
+	}
+
+	if (centered) {
+		x += canvas.width / 2 - w / 2;
+		y += canvas.height / 2 - h / 2;
 	}
 
 	ctx.drawImage(texture, imgx, imgy, imgw, imgh, x, y, w, h);

@@ -1,4 +1,4 @@
-var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ";
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ";
 
 class Alphabet {
 	static drawBlock(
@@ -10,11 +10,13 @@ class Alphabet {
 		size = 12,
 		color = COLORS.red,
 		boundByCamera = true,
-		centered = false
+		centered = true
 	) {
 		while (text.length * size < width) text += text;
 		while (text.length * size > width)
 			text = text.substr(0, text.length - 1);
+
+		var width = text.length * size;
 
 		if (centered) {
 			x += canvas.width / 2 - width / 2;
@@ -28,7 +30,8 @@ class Alphabet {
 				y + i * size,
 				size / 8,
 				color,
-				boundByCamera
+				boundByCamera,
+				false
 			);
 		}
 	}
@@ -38,7 +41,8 @@ class Alphabet {
 		y,
 		size = 12,
 		color = COLORS.red /* , hue = 0 */,
-		boundByCamera = true
+		boundByCamera = true,
+		centered = true
 	) {
 		for (var i = 0; i < text.length; i++) {
 			var char = text[i];
@@ -55,7 +59,8 @@ class Alphabet {
 				y * SCALE,
 				8 * SCALE * size,
 				8 * SCALE * size,
-				boundByCamera
+				boundByCamera,
+				centered
 			);
 			/*   ctx.filter = ""; */
 		}
