@@ -35,6 +35,37 @@ class Alphabet {
 			);
 		}
 	}
+
+	static drawMob(
+		x,
+		y,
+		string,
+		width,
+		height,
+		health = 5,
+		color = COLORS.green,
+		size = 1.5
+	) {
+		var position = { x, y };
+		var stringIndex = 0;
+		var maxHealth = width * height;
+
+		size *= 8;
+
+		for (var y = 0; y < height * size; y += size) {
+			for (var x = 0; x < width * size; x += size) {
+				this.drawWord(
+					string[stringIndex % string.length],
+					x + position.x,
+					y + position.y,
+					size / 8,
+					stringIndex >= maxHealth - health ? color : COLORS.grey
+				);
+				stringIndex++;
+			}
+		}
+	}
+
 	static drawWord(
 		text,
 		x,
