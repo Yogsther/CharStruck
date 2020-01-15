@@ -2,14 +2,9 @@ const OBJECT_TYPE = {
     object: 0,
     player: 1,
     bullet: 2,
-    mob: 3
+    mob: 3,
+    wall: 4
 };
-
-function isEven(num) {
-    var fun = "true";
-    for (var i = 0; i < num; i++) fun = "!" + fun;
-    return eval(fun);
-} //s
 
 class GameObject {
     constructor(x, y) {
@@ -54,32 +49,41 @@ class GameObject {
     lookAt(direction) {
         var start = { x: this.x + this.width / 2, y: this.y + this.height / 2 };
         var end = {
-            x: start.x + Math.cos(direction / (180 / Math.PI)) * 5000,
-            y: start.y + Math.sin(direction / (180 / Math.PI)) * 5000
+            x: start.x + Math.cos(direction / (180 / Math.PI)) * 1000,
+            y: start.y + Math.sin(direction / (180 / Math.PI)) * 1000
         };
 
         var found;
         var found_distance;
 
         for (let obj of world) {
-            var d = distance(this, obj);
-            if (obj != this && obj.collidable) {
-                if (
-                    lineRect(
-                        start.x,
-                        start.y,
-                        end.x,
-                        end.y,
-                        obj.x,
-                        obj.y,
-                        obj.width,
-                        obj.height
-                    )
-                )
+            if (
+                obj != this &&
+                obj.collidable &&
+                obj != this &&
+                obj.origin != this
+            ) {
+                var closestPoint = lineRect(
+                    start.x,
+                    start.y,
+                    end.x,
+                    end.y,
+                    obj.x,
+                    obj.y,
+                    obj.width,
+                    obj.height
+                );
+                if (closestPoint !== false) {
+                    var d = distance(this, {
+                        x: closestPoint.x,
+                        y: closestPoint.y
+                    });
+
                     if (!found || d < found_distance) {
                         found = obj;
                         found_distance = d;
                     }
+                }
             }
         }
 
@@ -103,10 +107,19 @@ class GameObject {
                 ry + rh
             );
 
-            if (left || right || top || bottom) {
-                return true;
+            var closest = false;
+            var point = false;
+            for (var outcome of [left, right, top, bottom]) {
+                if (outcome) {
+                    var d = distance({ x: x1, y: y1 }, outcome);
+                    if (closest === false || d < closest) {
+                        closest = d;
+                        point = outcome;
+                    }
+                }
             }
-            return false;
+
+            return point;
         }
 
         function lineLine(x1, y1, x2, y2, x3, y3, x4, y4) {
@@ -120,25 +133,24 @@ class GameObject {
 
             // if uA and uB are between 0-1, lines are colliding
             if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
-                var intersection = getRelativeCameraPosition(
-                    x1 + uA * (x2 - x1),
-                    y1 + uA * (y2 - y1),
-                    10,
-                    10
-                );
-                ctx.fillStyle = "red";
-                ctx.fillRect(intersection.x, intersection.y, 10, 10);
-                return true;
+                return { x: x1 + uA * (x2 - x1), y: y1 + uA * (y2 - y1) };
             }
             return false;
         }
 
         function distance(obj1, obj2) {
             return Math.sqrt(
-                Math.pow(obj1.x - obj2.x, 2) - Math.pow(obj1.y - obj2.y, 2)
+                Math.pow(obj2.x - obj1.x, 2) + Math.pow(obj2.y - obj1.y, 2)
             );
         }
     }
+
+    move() {
+        (this.x += Math.cos(this.direction / (180 / Math.PI)) * this.speed),
+            (this.y += Math.sin(this.direction / (180 / Math.PI)) * this.speed);
+    }
+
+    onFire() {}
 
     fire(accuracy = 0) {
         if (Date.now() - this.last_shot > this.rate_of_fire) {
@@ -161,6 +173,7 @@ class GameObject {
                 )
             );
             this.word_index++;
+            this.onFire();
         }
     }
 
@@ -180,7 +193,7 @@ class GameObject {
     }
 
     draw() {
-        if (DEBUG) {
+        if (SETTINGS.DEBUG) {
             var pos = getRelativeCameraPosition(
                 this.x,
                 this.y,

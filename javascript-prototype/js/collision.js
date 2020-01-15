@@ -14,15 +14,23 @@ function checkCollision(a, b) {
             if (report.fromBottom) a.y += kickback;
         }
 
-        if (a.type == OBJECT_TYPE.bullet && a.origin != b) {
+        if (
+            a.type == OBJECT_TYPE.bullet &&
+            a.origin != b &&
+            a.origin != b.origin
+        ) {
             if (b.type == OBJECT_TYPE.player || b.type == OBJECT_TYPE.mob) {
-                b.health -= a.damage;
+                if (!(SETTINGS.GOD_MODE && b.type == OBJECT_TYPE.player))
+                    b.health -= a.damage;
+                if (b.type == OBJECT_TYPE.player) {
+                    shake(player.direction, 30);
+                }
             }
 
             if (b.type == OBJECT_TYPE.bullet) {
                 b.kill();
             }
-
+            spawnParticles(a.x, a.y, 10, b.color, a.direction);
             a.kill();
         }
     }

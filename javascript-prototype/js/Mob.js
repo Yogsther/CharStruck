@@ -8,6 +8,7 @@ class Mob extends GameObject {
         color = COLORS.green
     ) {
         super(x, y);
+        this.ORIGINAL_SPEED = speed;
         this.speed = speed;
         this.color = color;
         this.last_shot = 0;
@@ -17,6 +18,11 @@ class Mob extends GameObject {
         this.senseRange = 1000;
 
         this.collidable = true;
+        this.last_saw_player = undefined;
+        this.turns_left = Math.random() > 0.5;
+
+        this.lookingAtPlayer = false;
+        this.turning_speed = 10;
 
         this.type = OBJECT_TYPE.mob;
         this.text_width = width;
@@ -32,6 +38,10 @@ class Mob extends GameObject {
             this.string += WORDS[Math.floor(Math.random() * WORDS.length)];
     }
 
+    onCollision() {
+        this.direction += 45;
+    }
+
     draw() {
         Alphabet.drawMob(
             this.x,
@@ -45,33 +55,92 @@ class Mob extends GameObject {
 
         super.draw();
 
-        var lookingAt = this.lookAt(this.direction);
-        if (lookingAt.target) {
-            var pos = getRelativeCameraPosition(
-                lookingAt.target.x,
-                lookingAt.target.y,
-                lookingAt.target.width,
-                lookingAt.target.height
+        this.lookingAtPlayer = false;
+        var playerAngle = this.getDirection(player) + 180;
+
+        var scans = 10;
+        class Angle {
+            constructor(angle, distance, target) {
+                this.angle = angle;
+                this.distance = distance;
+                this.target = target;
+            }
+        }
+
+        var angles = [];
+
+        for (let i = 0; i < scans; i++) {
+            let angle = playerAngle + i * (360 / scans);
+
+            let lookingAt = this.lookAt(angle);
+
+            if (lookingAt.target) {
+                angles.push(
+                    new Angle(angle, lookingAt.distance, lookingAt.target)
+                );
+            } else {
+                angles.push(new Angle(angle, Infinity, false));
+            }
+        }
+
+        var bestAngle = {
+            angle: false,
+            distanceToPlayer: false
+        };
+
+        for (var angle of angles) {
+            if (angle.target) {
+                if (angle.target.type == OBJECT_TYPE.player) {
+                    bestAngle.angle = angle.angle;
+                    break;
+                }
+
+                if (
+                    angle.target.type == OBJECT_TYPE.wall &&
+                    angle.distance < 200
+                ) {
+                    continue;
+                }
+            }
+
+            var distance = angle.distance < 100 ? angle.distance : 100;
+            //console.log({ angle });
+            var futurePosition = {
+                x: Math.cos(angle.angle / (180 / Math.PI)) * distance,
+                y: Math.sin(angle.angle / (180 / Math.PI)) * distance
+            };
+
+            var distanceToPlayer = Math.sqrt(
+                Math.pow(futurePosition.x - player.x, 2) +
+                    Math.pow(futurePosition.y - player.y, 2)
             );
 
-            ctx.strokeStyle = "red";
-            ctx.fillStyle = "red";
-            ctx.rect(
-                pos.x - lookingAt.target.width / 2,
-                pos.y - lookingAt.target.height / 2,
-                lookingAt.target.width,
-                lookingAt.target.height
-            );
-            ctx.stroke();
+            //console.log(futurePosition);
+            if (
+                bestAngle.distanceToPlayer === false ||
+                bestAngle.distanceToPlayer > distanceToPlayer
+            ) {
+                bestAngle.distanceToPlayer = distanceToPlayer;
+                bestAngle.angle = angle.angle;
+            }
+        }
+
+        if (!isNaN(this.x)) console.log(bestAngle);
+
+        if (bestAngle.angle) {
+            this.direction = bestAngle.angle;
+        } else {
+            this.angle = Math.random() * 360;
         }
     }
 
     logic() {
         if (this.health <= 0) this.kill();
         this.step();
-        this.direction = this.getDirection(player) + 180;
 
-        this.fire();
+        if (this.lookingAtPlayer) {
+            this.fire();
+        }
     }
 
     step() {

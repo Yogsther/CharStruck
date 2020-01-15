@@ -11,7 +11,7 @@ class Player extends GameObject {
         this.collidable = true;
         this.speed = 0;
         this.last_shot = 0;
-        this.rate_of_fire = 150; // ms between each shot
+        this.rate_of_fire = 50; // ms between each shot
         this.moving = false;
         this.acceleration = 5;
         this.friction = 5;
@@ -45,7 +45,7 @@ class Player extends GameObject {
 
         super.draw();
 
-        if (DEBUG) {
+        if (SETTINGS.DEBUG) {
             var pos = getRelativeCameraPosition(
                 this.x,
                 this.y,
@@ -54,6 +54,10 @@ class Player extends GameObject {
             );
             this.drawLine(pos.x, pos.y, this.aimDirection, 100, "blue");
         }
+    }
+
+    onFire() {
+        //shake(player.aimDirection + 180, 10);
     }
 
     logic() {

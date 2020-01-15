@@ -1,5 +1,8 @@
-var DEBUG = true;
-var LOG_KEYS = false;
+const SETTINGS = {
+    DEBUG: true,
+    LOG_KEYS: false,
+    GOD_MODE: true
+};
 
 var world = [];
 
@@ -9,6 +12,7 @@ var SCALE = 1;
 
 var player = new Player();
 var camera = { x: 0, y: 0 };
+var cameraOffset = { x: 0, y: 0 };
 
 /* for (var i = 0; i < 1; i++) {
     new Mob(100, 100, 1);
@@ -29,6 +33,12 @@ function resizeCanvas() {
     ctx.imageSmoothingEnabled = false;
 }
 
+function reset() {
+    world = [];
+    player = new Player(0, 0);
+    camera = { x: 0, y: 0 };
+}
+
 document.body.appendChild(canvas);
 
 function loop() {
@@ -40,8 +50,16 @@ function loop() {
 var keysDown = [];
 document.body.addEventListener("keydown", e => {
     keysDown[e.keyCode] = true;
-    if (keybinds[e.keyCode]) keybinds[e.keyCode]();
-    if (LOG_KEYS) console.log(e.keyCode);
+    for (var bind of keybinds) {
+        if (keysDown[bind.key]) {
+            if (typeof bind.run == "string") {
+                SETTINGS[bind.run] = !SETTINGS[bind.run];
+            } else {
+                bind.run();
+            }
+        }
+    }
+    if (SETTINGS.LOG_KEYS) console.log(e.keyCode);
 });
 
 document.body.addEventListener("keyup", e => {
@@ -112,6 +130,8 @@ function logic() {
             checkCollision(player, obj);
         }
     }
+
+    stepShake();
 }
 
 function render() {
@@ -125,8 +145,8 @@ function render() {
         for (var y = -padding; y < canvas.height + padding; y += tileHeight) {
             Alphabet.drawWord(
                 "GROUND",
-                x - (camera.x % tileWidth),
-                y - (camera.y % tileWidth),
+                x - ((camera.x + cameraOffset.x) % tileWidth),
+                y - ((camera.y + cameraOffset.y) % tileWidth),
                 size * SCALE,
                 COLORS.dark,
                 false,
@@ -137,6 +157,82 @@ function render() {
 
     for (item of world) {
         item.draw();
+    }
+
+    if (SETTINGS.DEBUG) {
+        ctx.font = "20px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "right";
+
+        ctx.fillText(
+            "WORLD SIZE [" + world.length + "]",
+            canvas.width - 20,
+            40
+        );
+
+        ctx.textAlign = "left";
+        for (var i = 0; i < keybinds.length; i++) {
+            var bind = keybinds[i];
+            var isBool = typeof bind.run == "string";
+
+            ctx.fillStyle = keysDown[bind.key] ? "red" : "white";
+            var text = bind.name;
+            if (isBool) {
+                var enabled = SETTINGS[bind.run];
+                ctx.fillStyle = enabled ? "#2ade63" : "#ff143f";
+                text += ": " + (enabled ? "enabled" : "disabled");
+            }
+
+            ctx.fillText(text, 20, 40 + i * 25);
+        }
+    }
+}
+
+var shakeEffect = 2;
+var shakeFriction = 5;
+var shakeDirection = 0;
+var shakeAmount = 0;
+var shakeActive = false;
+
+function shake(direction, amount, effect = 2) {
+    cameraOffset = { x: 0, y: 0 };
+    shakeDirection = direction;
+    shakeAmount = amount;
+    shakeEffect = effect;
+    shakeActive = true;
+}
+
+function stepShake() {
+    if (shakeAmount > 0) {
+        step();
+        shakeAmount -= shakeFriction;
+        if (shakeAmount <= 0) {
+            shakeDirection += 180;
+            shakeAmount = 0;
+        }
+    } else {
+        // Restore
+        if (shakeActive) {
+            if (
+                Math.sqrt(
+                    Math.pow(cameraOffset.x, 2) - Math.pow(cameraOffset.y, 2)
+                ) /
+                    2 <=
+                shakeEffect
+            ) {
+                cameraOffset = { x: 0, y: 0 };
+                shakeActive = false;
+            } else {
+                step();
+            }
+        }
+    }
+
+    function step() {
+        cameraOffset.x +=
+            Math.cos(shakeDirection / (180 / Math.PI)) * shakeEffect;
+        cameraOffset.y +=
+            Math.sin(shakeDirection / (180 / Math.PI)) * shakeEffect;
     }
 }
 
@@ -184,8 +280,8 @@ function getRelativeCameraPosition(
     centered = true
 ) {
     if (boundByCamera) {
-        x = x - camera.x;
-        y = y - camera.y;
+        x = x - (camera.x + cameraOffset.x);
+        y = y - (camera.y + cameraOffset.y);
     }
 
     if (centered) {
