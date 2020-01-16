@@ -92,6 +92,8 @@ class Mob extends GameObject {
             if (angle.target) {
                 if (angle.target.type == OBJECT_TYPE.player) {
                     bestAngle.angle = angle.angle;
+                    this.lookingAtPlayer = true;
+                    this.last_saw_player = { x: player.x, y: player.y };
                     break;
                 }
 
@@ -124,8 +126,6 @@ class Mob extends GameObject {
                 bestAngle.angle = angle.angle;
             }
         }
-
-        if (!isNaN(this.x)) console.log(bestAngle);
 
         if (bestAngle.angle) {
             this.direction = bestAngle.angle;

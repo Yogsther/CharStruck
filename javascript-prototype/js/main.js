@@ -1,7 +1,11 @@
 const SETTINGS = {
     DEBUG: true,
     LOG_KEYS: false,
-    GOD_MODE: true
+    GOD_MODE: true,
+    EDITOR: true,
+    PAUSED: false,
+    DISABLE_COLLISIONS: false,
+    DRAW_HITBOXES: true
 };
 
 var world = [];
@@ -13,10 +17,6 @@ var SCALE = 1;
 var player = new Player();
 var camera = { x: 0, y: 0 };
 var cameraOffset = { x: 0, y: 0 };
-
-/* for (var i = 0; i < 1; i++) {
-    new Mob(100, 100, 1);
-} */
 
 new Wall(100, 100, 500, 100);
 
@@ -44,6 +44,7 @@ document.body.appendChild(canvas);
 function loop() {
     logic();
     render();
+    if (SETTINGS.DEBUG && SETTINGS.EDITOR) editorLoop();
     requestAnimationFrame(loop);
 }
 
@@ -113,23 +114,27 @@ function getRandomWord() {
 function logic() {
     cameraLogic();
 
-    for (item of world) {
-        item.logic();
+    if (!SETTINGS.PAUSED) {
+        for (item of world) {
+            item.logic();
+        }
     }
 
-    for (var a of world) {
-        if (a.collidable) {
-            for (let b of world) {
-                if (b.collidable && b != a) checkCollision(a, b);
+    if (!SETTINGS.DISABLE_COLLISIONS) {
+        for (var a of world) {
+            if (a.collidable) {
+                for (let b of world) {
+                    if (b.collidable && b != a) checkCollision(a, b);
+                }
             }
         }
     }
 
-    for (var obj of world) {
+    /* for (var obj of world) {
         if (obj.collidable) {
             checkCollision(player, obj);
         }
-    }
+    } */
 
     stepShake();
 }
@@ -164,10 +169,14 @@ function render() {
         ctx.fillStyle = "white";
         ctx.textAlign = "right";
 
+        ctx.fillText(`World size: ${world.length}`, canvas.width - 20, 40);
+        ctx.fillText(`C:ds X ${mouse.x} Y ${mouse.y}`, canvas.width - 20, 70);
         ctx.fillText(
-            "WORLD SIZE [" + world.length + "]",
+            `REL_C: X ${Math.round(realtiveMouse.x)} Y ${Math.round(
+                realtiveMouse.y
+            )}`,
             canvas.width - 20,
-            40
+            100
         );
 
         ctx.textAlign = "left";

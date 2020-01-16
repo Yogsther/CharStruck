@@ -193,7 +193,7 @@ class GameObject {
     }
 
     draw() {
-        if (SETTINGS.DEBUG) {
+        if (SETTINGS.DEBUG && SETTINGS.DRAW_HITBOXES) {
             var pos = getRelativeCameraPosition(
                 this.x,
                 this.y,
