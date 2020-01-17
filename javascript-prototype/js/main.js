@@ -5,7 +5,9 @@ const SETTINGS = {
     EDITOR: true,
     PAUSED: false,
     DISABLE_COLLISIONS: false,
-    DRAW_HITBOXES: true
+    DRAW_HITBOXES: true,
+    DRAW_PATH_FIDNING: false,
+    DRAW_PATHS: true
 };
 
 var world = [];
@@ -18,7 +20,7 @@ var player = new Player();
 var camera = { x: 0, y: 0 };
 var cameraOffset = { x: 0, y: 0 };
 
-new Wall(100, 100, 500, 100);
+new Wall(100, 100, 500, 40);
 
 window.onload = () => {
     resizeCanvas();
@@ -138,6 +140,8 @@ function logic() {
 
     stepShake();
 }
+
+new Mob(500, -50, 5);
 
 function render() {
     var size = 5;

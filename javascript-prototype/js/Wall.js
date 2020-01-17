@@ -8,6 +8,7 @@ class Wall extends GameObject {
         this.color = color;
         this.text = text;
         this.type = OBJECT_TYPE.wall;
+        this.map_item = true;
     }
 
     draw() {

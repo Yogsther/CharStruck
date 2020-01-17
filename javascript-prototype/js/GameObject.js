@@ -21,6 +21,7 @@ class GameObject {
         this.word = undefined;
         this.last_shot = 0;
         this.rate_of_fire = 0;
+        this.map_item = false;
 
         this.speed = 0;
         world.push(this);
@@ -44,6 +45,201 @@ class GameObject {
                 180) /
             Math.PI
         );
+    }
+
+    getPath(target) {
+        target.x += target.width / 2;
+        target.y += target.height / 2;
+        target.width = 2;
+        target.height = 2;
+
+        if (areColliding(target, this)) {
+            return false;
+        }
+
+        class Node {
+            constructor(x, y, size, origin, direction, first = false) {
+                this.x = Math.round(x);
+                this.y = Math.round(y);
+
+                this.id = this.x + ":" + this.y;
+                this.width = size;
+                this.height = size;
+
+                this.partOfPath = false;
+                this.first = first;
+
+                this.g = getDistance(this, origin);
+                this.h = getDistance(this, target);
+                this.f = this.g + this.h;
+                this.triggered = false;
+
+                this.direction = direction;
+                this.contact = false;
+
+                this.walkable = true;
+
+                if (areColliding(this, target)) {
+                    this.contact = true;
+                    pathFound = true;
+                    var pathDone = false;
+                    var node = this;
+                    var breaker = 0;
+                    while (!pathDone && breaker < 100) {
+                        breaker++;
+                        node.partOfPath = true;
+                        path.unshift(node);
+                        if (node.first) pathDone = true;
+                        else {
+                            node =
+                                nodes[
+                                    `${node.x +
+                                        -node.direction.x *
+                                            NODE_SIZE}:${node.y +
+                                        -node.direction.y * NODE_SIZE}`
+                                ];
+                        }
+                    }
+                } else {
+                    for (var item of world) {
+                        if (item.solid && areColliding(this, item)) {
+                            this.walkable = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        function getSurroundingNodes(x, y) {
+            return [
+                { x: 1, y: 0 },
+                { x: -1, y: 0 },
+                { x: 0, y: 1 },
+                { x: 0, y: -1 }
+            ];
+        }
+
+        function summonSurroundingNodes(originX, originY, origin, first) {
+            if (first) {
+                summon(0, 0, true);
+            }
+            for (var dir of getSurroundingNodes(originX, originY)) {
+                summon(dir.x, dir.y);
+            }
+
+            function summon(x, y, first) {
+                addNode(
+                    new Node(
+                        originX + NODE_SIZE * x,
+                        originY + NODE_SIZE * y,
+                        NODE_SIZE,
+                        origin,
+                        { x, y },
+                        first
+                    )
+                );
+            }
+        }
+
+        function addNode(node) {
+            if (!nodes[node.id]) nodes[node.id] = node;
+        }
+
+        var nodes = {};
+        const MAX_NODES = 30;
+        const NODE_SIZE = this.width > this.height ? this.width : this.height;
+        var pathFound = false;
+        var path = [];
+
+        summonSurroundingNodes(this.x, this.y, this, true);
+
+        while (Object.keys(nodes).length < MAX_NODES && !pathFound) {
+            let next;
+            for (let key in nodes) {
+                let node = nodes[key];
+                if (
+                    !node.triggered &&
+                    node.walkable &&
+                    (!next || node.f < next.f)
+                ) {
+                    next = node;
+                }
+            }
+
+            if (!next) {
+                break;
+            } else {
+                next.triggered = true;
+                summonSurroundingNodes(next.x, next.y, this);
+            }
+        }
+
+        if (SETTINGS.DRAW_PATHS && SETTINGS.DEBUG) {
+            ctx.beginPath();
+            ctx.strokeStyle = "gold";
+            ctx.strokeWidth = 5;
+            for (var node of path) {
+                var rel = getRelativeCameraPosition(node.x, node.y);
+                ctx.lineTo(rel.x + NODE_SIZE / 2, rel.y + NODE_SIZE / 2);
+            }
+            //ctx.moveTo(rel.x + NODE_SIZE / 2, rel.y + NODE_SIZE / 2);
+
+            ctx.stroke();
+        }
+
+        if (SETTINGS.DRAW_PATH_FIDNING && SETTINGS.DEBUG) {
+            for (let key in nodes) {
+                let node = nodes[key];
+                ctx.fillStyle = node.walkable
+                    ? "rgba(0, 255, 0, .5)"
+                    : "rgba(255, 0, 0, .5)";
+                if (node.partOfPath) ctx.fillStyle = "rgba(255, 255, 255, .7)";
+                if (node.first) ctx.fillStyle = "rgba(0, 0, 255, .5)";
+                if (node.contact) ctx.fillStyle = "rgba(0, 0, 255, .5)";
+                var rel = getRelativeCameraPosition(
+                    node.x - NODE_SIZE / 2,
+                    node.y - NODE_SIZE / 2,
+                    NODE_SIZE,
+                    NODE_SIZE,
+                    true,
+                    true
+                );
+                ctx.fillRect(rel.x, rel.y, NODE_SIZE, NODE_SIZE);
+                ctx.fillStyle = "white";
+                ctx.font = "15px Arial";
+                ctx.fillText(
+                    `G:${node.g.toFixed(0)}, H:${node.h.toFixed(0)}, `,
+                    rel.x + 10,
+                    rel.y + 20
+                );
+
+                ctx.fillText(`F:${node.f.toFixed(0)} `, rel.x + 10, rel.y + 40);
+                ctx.fillText(
+                    `ID:${node.id} `,
+                    rel.x + 10,
+                    rel.y + NODE_SIZE - 30
+                );
+                ctx.fillText(
+                    `DIR: X: ${node.direction.x} Y: ${node.direction.y}  `,
+                    rel.x + 10,
+                    rel.y + NODE_SIZE - 10
+                );
+
+                ctx.beginPath();
+
+                ctx.strokeStyle = "blue";
+                ctx.strokeWidth = 5;
+                ctx.moveTo(rel.x + NODE_SIZE / 2, rel.y + NODE_SIZE / 2);
+                ctx.lineTo(
+                    rel.x + NODE_SIZE / 2 + (node.direction.x * NODE_SIZE) / 2,
+                    rel.y + NODE_SIZE / 2 + (node.direction.y * NODE_SIZE) / 2
+                );
+                ctx.stroke();
+            }
+        }
+
+        return path;
     }
 
     lookAt(direction) {

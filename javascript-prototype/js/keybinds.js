@@ -43,13 +43,23 @@ new KeyBind("[DEL] Delete last item", 46, () => {
 new KeyBind("[G] God mode", 71, "GOD_MODE");
 
 new KeyBind("[L] Log map", 76, () => {
-    var map = JSON.parse(JSON.stringify(world));
-    for (var i = 0; i < map.length; i++)
-        if (map[i].type == OBJECT_TYPE.player) map.splice(i, 1);
-    console.log(JSON.stringify(map));
+    var exportMap = [];
+    for (var item of world) {
+        if (item.map_item) {
+            exportMap.push({
+                item: item.constructor.name,
+                x: item.x,
+                y: item.y,
+                w: item.width,
+                h: item.height
+            });
+        }
+    }
+    console.log(JSON.stringify(exportMap));
 });
 
 new KeyBind("[H] Draw hitboxes", 72, "DRAW_HITBOXES");
 
 new KeyBind("[P] Pause logic", 80, "PAUSED");
 new KeyBind("[C] Pause collisions", 67, "DISABLE_COLLISIONS");
+new KeyBind("[O] Draw pathfinding", 79, "DRAW_PATH_FIDNING");
