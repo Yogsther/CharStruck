@@ -25,6 +25,9 @@ new Wall(100, 100, 500, 40);
 window.onload = () => {
     resizeCanvas();
     loop();
+
+    loadMap(MAPS.test);
+    player = new Player();
 };
 
 window.onresize = resizeCanvas;
@@ -141,7 +144,7 @@ function logic() {
     stepShake();
 }
 
-new Mob(500, -50, 5);
+//new Mob(500, -50, 5);
 
 function render() {
     var size = 5;

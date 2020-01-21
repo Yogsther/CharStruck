@@ -188,3 +188,15 @@ canvas.addEventListener("mousemove", e => {
         y: mouse.y + camera.y + cameraOffset.y - canvas.height / 2
     };
 });
+
+function loadMap(map) {
+    var items = {
+        Wall: Wall,
+        Mob: Mob
+    };
+    world = [];
+
+    for (let item of map) {
+        new items[item.item](item.x, item.y, item.w, item.h);
+    }
+}

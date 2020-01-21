@@ -50,8 +50,14 @@ new KeyBind("[L] Log map", 76, () => {
                 item: item.constructor.name,
                 x: item.x,
                 y: item.y,
-                w: item.width,
-                h: item.height
+                w:
+                    item.constructor.name == "Mob"
+                        ? item.width / 12
+                        : item.width,
+                h:
+                    item.constructor.name == "Mob"
+                        ? item.height / 12
+                        : item.height
             });
         }
     }

@@ -2,9 +2,10 @@ class Mob extends GameObject {
     constructor(
         x,
         y,
-        speed = 1,
+
         width = 10,
         height = 10,
+        speed = 1,
         color = COLORS.green
     ) {
         super(x, y);
@@ -40,8 +41,10 @@ class Mob extends GameObject {
             this.string += WORDS[Math.floor(Math.random() * WORDS.length)];
     }
 
-    onCollision() {
-        /* this.direction += 45; */
+    onCollision(other) {
+        if (other.type == OBJECT_TYPE.wall) {
+            this.direction += 180;
+        }
     }
 
     draw() {
@@ -54,8 +57,6 @@ class Mob extends GameObject {
             this.health,
             this.color
         );
-
-        //[{"item":"Wall","x":-1137.7786214855196,"y":-228.16555056164302,"w":1327.8910632703712,"h":57.81677681701288},{"item":"Wall","x":87.64464162325089,"y":-162.85773278384,"w":81.00252234672246,"h":555.0019464047296},{"item":"Wall","x":-393.048514463118,"y":-161.29366994074826,"w":81.69315614841997,"h":282.2200300554034},{"item":"Wall","x":-391.40928857417555,"y":393.98411922600724,"w":560.2920268101757,"h":57.81677681701288},{"item":"Mob","x":-207.19469681250325,"y":238.4117778324486,"w":120,"h":120},{"item":"Mob","x":-1070.7619163888598,"y":252.26058741023792,"w":120,"h":120},{"item":"Wall","x":-816.5468113906215,"y":97.80277222469863,"w":81.69315614841997,"h":600.1157626478507},{"item":"Wall","x":-737.4204465977892,"y":640.0835677884613,"w":341.9999472511287,"h":57.81677681701288},{"item":"Wall","x":-390.8186632499633,"y":454.0215065168193,"w":81.69315614841997,"h":243.50256062658013},{"item":"Wall","x":-1221.0806091410382,"y":-227.36758330938952,"w":80.83000312637836,"h":859.8398800022877},{"item":"Wall","x":-1228.3127649317128,"y":641.2322260008411,"w":409.3653038093056,"h":64.45125339710447}]
 
         super.draw();
 
@@ -80,7 +81,8 @@ class Mob extends GameObject {
 
             if (!path) {
                 this.last_saw_player = false;
-                this.direction++s;
+                console.log("Lost");
+                this.direction++;
             } else if (!this.lookingAtPlayer && path.length > 1) {
                 this.direction = this.getDirection(path[1]) - 180;
             }
@@ -88,11 +90,26 @@ class Mob extends GameObject {
     }
 
     logic() {
-        if (this.health <= 0) this.kill();
+        if (this.health <= 0) {
+            this.kill();
+
+            for (var item of world) {
+                if (item.type == OBJECT_TYPE.mob) {
+                    return;
+                }
+            }
+
+            new Key(this.x, this.y);
+            return;
+        }
         this.step();
 
         if (this.lookingAtPlayer) {
             this.fire();
+        } else {
+            if (Math.random() > 0.95) {
+                this.direction += 45 * Math.random() > 0.5 ? 1 : -1;
+            }
         }
     }
 
