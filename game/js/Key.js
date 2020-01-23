@@ -4,6 +4,7 @@ class Key extends GameObject {
         this.width = 50;
         this.height = 50;
         this.collidable = true;
+        this.color = COLORS.gold;
     }
 
     randomString() {
@@ -16,7 +17,7 @@ class Key extends GameObject {
 
     onCollision(other) {
         if (other == player) {
-            alert("Level complete");
+            nextLevel();
         }
     }
 
@@ -28,7 +29,7 @@ class Key extends GameObject {
             this.width,
             this.height,
             15,
-            COLORS.gold,
+            this.color,
             true,
             true
         );

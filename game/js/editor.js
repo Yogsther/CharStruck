@@ -1,7 +1,17 @@
 var wallSpawnDimensions = { w: 50, h: 50 };
 var mouseOver = false;
+var lastMousePos = false;
 
 function editorLoop() {
+    if (mouse.contextDown && SETTINGS.PAUSED) {
+        if (lastMousePos) {
+            camera.x += lastMousePos.x - mouse.x;
+            camera.y += lastMousePos.y - mouse.y;
+        }
+        lastMousePos = { x: mouse.x, y: mouse.y };
+        return;
+    }
+
     mouseOver = false;
     var collision;
     for (var item of world) {
@@ -161,17 +171,29 @@ function getDistance(a, b) {
 }
 
 canvas.addEventListener("mousedown", e => {
-    mouse.down = true;
+    lastMousePos = false;
+    if (e.button == 2) {
+        mouse.contextDown = true;
+    } else {
+        mouse.down = true;
+    }
+});
+
+canvas.addEventListener("contextmenu", e => {
+    e.preventDefault();
+    return false;
 });
 
 canvas.addEventListener("mouseup", e => {
     mouse.down = false;
+    mouse.contextDown = false;
 });
 
 var mouse = {
     x: 0,
     y: 0,
     down: false,
+    contextDown: false,
     grabbing: false,
     offset: { x: 0, y: 0 },
     axsis: false
@@ -194,9 +216,51 @@ function loadMap(map) {
         Wall: Wall,
         Mob: Mob
     };
-    world = [];
+    loadingMap = true;
+    SETTINGS.PAUSED = true;
 
+    world = [];
+    timer = Date.now();
     for (let item of map) {
         new items[item.item](item.x, item.y, item.w, item.h);
+    }
+    letterCurve = 0;
+}
+
+var letterCurve = 0;
+
+function renderLevelIntro() {
+    letterCurve += 0.2;
+    ctx.fillStyle = "rgba(0, 0, 0, .8)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    var text = "Level " + (mapIndex + 1).toString();
+    var size = 10;
+    var spacing = 90;
+    var length = text.length * size + (spacing * text.length - 1);
+    var start = canvas.width / 2 - length / 2;
+    for (var i = 0; i < text.length; i++) {
+        var x = start + (i * size + spacing * i);
+        var y = canvas.height / 2 - 100;
+        y += Math.sin(-letterCurve + i) * 10;
+        Alphabet.drawWord(text[i], x, y, size, COLORS.gold, true, false);
+    }
+
+    if (letterCurve > 10) finishLoading();
+}
+
+function finishLoading() {
+    console.log("Done!");
+    SETTINGS.PAUSED = false;
+    loadingMap = false;
+}
+
+function nextLevel() {
+    mapIndex++;
+    if (mapIndex < mapPool.length) {
+        loadMap(mapPool[mapIndex]);
+    } else {
+        world = [];
+        displayMainMenu();
+        console.log("Showing main menu");
     }
 }

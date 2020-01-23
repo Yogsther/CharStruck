@@ -1,4 +1,4 @@
-const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ";
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ1234567890";
 
 class Alphabet {
     static drawBlock(

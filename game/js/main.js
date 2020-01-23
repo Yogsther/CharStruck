@@ -1,7 +1,7 @@
 const SETTINGS = {
-    DEBUG: true,
+    DEBUG: false,
     LOG_KEYS: false,
-    GOD_MODE: true,
+    GOD_MODE: false,
     EDITOR: true,
     PAUSED: false,
     DISABLE_COLLISIONS: false,
@@ -11,6 +11,9 @@ const SETTINGS = {
 };
 
 var world = [];
+var timer = 0;
+var mapIndex = 0;
+var loadingMap = false;
 
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
@@ -20,14 +23,9 @@ var player = new Player();
 var camera = { x: 0, y: 0 };
 var cameraOffset = { x: 0, y: 0 };
 
-new Wall(100, 100, 500, 40);
-
 window.onload = () => {
     resizeCanvas();
     loop();
-
-    loadMap(MAPS.test);
-    player = new Player();
 };
 
 window.onresize = resizeCanvas;
@@ -73,6 +71,7 @@ document.body.addEventListener("keyup", e => {
 });
 
 function cameraLogic() {
+    if (SETTINGS.PAUSED) return;
     var cameraSight = {
         x: player.x - camera.x + player.width / 2,
         y: player.y - camera.y + player.height / 2
@@ -169,6 +168,10 @@ function render() {
 
     for (item of world) {
         item.draw();
+    }
+
+    if (loadingMap) {
+        renderLevelIntro();
     }
 
     if (SETTINGS.DEBUG) {
