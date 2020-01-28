@@ -11,7 +11,7 @@ class Player extends GameObject {
         this.collidable = true;
         this.speed = 0;
         this.last_shot = 0;
-        this.rate_of_fire = 50; // ms between each shot
+        this.rate_of_fire = 80; // ms between each shot
         this.moving = false;
         this.acceleration = 5;
         this.friction = 5;
@@ -57,7 +57,8 @@ class Player extends GameObject {
     }
 
     onFire() {
-        //shake(player.aimDirection + 180, 10);
+        /* shake(player.aimDirection + 180, 10); */
+        STATS.shots_fired++;
     }
 
     logic() {
@@ -88,7 +89,14 @@ class Player extends GameObject {
         this.speed -= this.friction;
         if (this.speed < 0) this.speed = 0;
 
-        if (this.health <= 0) this.kill();
+        if (this.health <= 0) {
+            this.kill();
+            STATS.deaths++;
+            runText("YOU DIED", COLORS.red, 20, () => {
+                loadMap(mapPool[mapIndex]);
+            });
+        }
+
         this.health += 0.1;
         if (this.health > this.MAX_HEALTH) this.health = this.MAX_HEALTH;
     }

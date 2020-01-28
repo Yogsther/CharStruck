@@ -3,7 +3,8 @@ const OBJECT_TYPE = {
     player: 1,
     bullet: 2,
     mob: 3,
-    wall: 4
+    wall: 4,
+    ui: 5
 };
 
 class GameObject {
@@ -396,6 +397,15 @@ class GameObject {
                 this.width,
                 this.height
             );
+
+            if (this.type == OBJECT_TYPE.ui) {
+                pos = {
+                    x: this.x,
+                    y: this.y,
+                    width: this.width,
+                    height: this.height
+                };
+            }
 
             this.drawLine(
                 pos.x,

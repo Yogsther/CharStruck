@@ -2,7 +2,7 @@ const WORDS = [
     "PROGRAMMERING",
     "VISUAL",
     "ARDUINO",
-    "KOD",
+    "KODA",
     "VITLÖKSBRÖD",
     "COOP",
     "ICA",

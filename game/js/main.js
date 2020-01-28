@@ -10,10 +10,12 @@ const SETTINGS = {
     DRAW_PATHS: true
 };
 
+var STATS = {};
+
+var frames = 0;
 var world = [];
 var timer = 0;
 var mapIndex = 0;
-var loadingMap = false;
 
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
@@ -26,6 +28,9 @@ var cameraOffset = { x: 0, y: 0 };
 window.onload = () => {
     resizeCanvas();
     loop();
+
+    displayMainMenu();
+    /* loadMap(MAPS.level1); */
 };
 
 window.onresize = resizeCanvas;
@@ -64,6 +69,11 @@ document.body.addEventListener("keydown", e => {
         }
     }
     if (SETTINGS.LOG_KEYS) console.log(e.keyCode);
+    if (showingMenu && e.keyCode == 32) {
+        mapIndex = 0;
+        showingMenu = false;
+        loadMap(mapPool[mapIndex]);
+    }
 });
 
 document.body.addEventListener("keyup", e => {
@@ -134,35 +144,36 @@ function logic() {
         }
     }
 
-    /* for (var obj of world) {
-        if (obj.collidable) {
-            checkCollision(player, obj);
-        }
-    } */
-
     stepShake();
 }
 
-//new Mob(500, -50, 5);
-
 function render() {
-    var size = 5;
-    var tileWidth = "GROUND".length * SCALE * 8 * size;
-    var tileHeight = SCALE * 8 * size;
-    var padding = tileWidth * SCALE * 2;
+    if (showingMenu) {
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    } else {
+        var size = 5;
+        var tileWidth = "GROUND".length * SCALE * 8 * size;
+        var tileHeight = SCALE * 8 * size;
+        var padding = tileWidth * SCALE * 2;
 
-    // Draw ground infinite scroll illusion
-    for (var x = -padding; x < canvas.width + padding; x += tileWidth) {
-        for (var y = -padding; y < canvas.height + padding; y += tileHeight) {
-            Alphabet.drawWord(
-                "GROUND",
-                x - ((camera.x + cameraOffset.x) % tileWidth),
-                y - ((camera.y + cameraOffset.y) % tileWidth),
-                size * SCALE,
-                COLORS.dark,
-                false,
-                false
-            );
+        // Draw ground infinite scroll illusion
+        for (var x = -padding; x < canvas.width + padding; x += tileWidth) {
+            for (
+                var y = -padding;
+                y < canvas.height + padding;
+                y += tileHeight
+            ) {
+                Alphabet.drawWord(
+                    "GROUND",
+                    x - ((camera.x + cameraOffset.x) % tileWidth),
+                    y - ((camera.y + cameraOffset.y) % tileWidth),
+                    size * SCALE,
+                    COLORS.dark,
+                    false,
+                    false
+                );
+            }
         }
     }
 
@@ -170,8 +181,14 @@ function render() {
         item.draw();
     }
 
-    if (loadingMap) {
+    if (displayingText) {
         renderLevelIntro();
+    }
+
+    if (showingMenu) {
+        renderMenu();
+    } else {
+        renderTimer();
     }
 
     if (SETTINGS.DEBUG) {
@@ -205,6 +222,8 @@ function render() {
             ctx.fillText(text, 20, 40 + i * 25);
         }
     }
+
+    frames++;
 }
 
 var shakeEffect = 2;

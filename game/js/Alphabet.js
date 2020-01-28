@@ -1,6 +1,18 @@
-const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ1234567890";
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ1234567890:";
 
 class Alphabet {
+    static drawUITextCentered(text, x, y, size = 12, color = COLORS.red) {
+        this.drawWord(
+            text,
+            x - text.length * 4 * size,
+            y,
+            size,
+            color,
+            false,
+            false
+        );
+    }
+
     static drawBlock(
         text,
         x,

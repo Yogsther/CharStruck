@@ -217,39 +217,87 @@ function loadMap(map) {
         Mob: Mob
     };
     loadingMap = true;
-    SETTINGS.PAUSED = true;
 
     world = [];
-    timer = Date.now();
+
     for (let item of map) {
         new items[item.item](item.x, item.y, item.w, item.h);
     }
     letterCurve = 0;
+    player = new Player();
+
+    runText(
+        "Level " + (mapIndex + 1).toString(),
+        COLORS.gold,
+        10,
+        finishLoading
+    );
 }
 
+function runText(text, color, duration, callback) {
+    displayingText = true;
+    displayText = text;
+    dispalyColor = color;
+    displayDuration = duration;
+    displayTextCallback = callback;
+
+    camera.x = 0;
+    camera.y = 0;
+
+    SETTINGS.PAUSED = true;
+    letterCurve = 0;
+}
+
+var displayTextCallback;
 var letterCurve = 0;
+var displayingText = false;
+var displayText;
+var displayDuration;
+var dispalyColor;
 
 function renderLevelIntro() {
     letterCurve += 0.2;
     ctx.fillStyle = "rgba(0, 0, 0, .8)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    var text = "Level " + (mapIndex + 1).toString();
+
     var size = 10;
     var spacing = 90;
-    var length = text.length * size + (spacing * text.length - 1);
+    var length = displayText.length * size + (spacing * displayText.length - 1);
     var start = canvas.width / 2 - length / 2;
-    for (var i = 0; i < text.length; i++) {
+    for (var i = 0; i < displayText.length; i++) {
         var x = start + (i * size + spacing * i);
         var y = canvas.height / 2 - 100;
         y += Math.sin(-letterCurve + i) * 10;
-        Alphabet.drawWord(text[i], x, y, size, COLORS.gold, true, false);
+        Alphabet.drawWord(
+            displayText[i],
+            x,
+            y,
+            size,
+            dispalyColor,
+            true,
+            false
+        );
     }
 
-    if (letterCurve > 10) finishLoading();
+    if (letterCurve > displayDuration) {
+        SETTINGS.PAUSED = false;
+        displayingText = false;
+        displayTextCallback();
+    }
 }
 
 function finishLoading() {
-    console.log("Done!");
+    if (mapIndex == 0) {
+        timer = Date.now();
+
+        STATS = {
+            shots_fired: 0,
+            damage_taken: 0,
+            damage_done: 0,
+            time: 0,
+            deaths: 0
+        };
+    }
     SETTINGS.PAUSED = false;
     loadingMap = false;
 }
@@ -259,8 +307,10 @@ function nextLevel() {
     if (mapIndex < mapPool.length) {
         loadMap(mapPool[mapIndex]);
     } else {
+        var time = formatTime(timer);
+        STATS.time = `${time.m}:${time.s}:${time.ms}`;
         world = [];
+        menu = menus.post;
         displayMainMenu();
-        console.log("Showing main menu");
     }
 }

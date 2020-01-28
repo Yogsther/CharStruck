@@ -20,8 +20,14 @@ function checkCollision(a, b) {
             a.origin != b.origin
         ) {
             if (b.type == OBJECT_TYPE.player || b.type == OBJECT_TYPE.mob) {
-                if (!(SETTINGS.GOD_MODE && b.type == OBJECT_TYPE.player))
+                if (!(SETTINGS.GOD_MODE && b.type == OBJECT_TYPE.player)) {
                     b.health -= a.damage;
+                    STATS.damage_taken += a.damage;
+                }
+
+                if (b.type == OBJECT_TYPE.mob) {
+                    STATS.damage_done += a.damage;
+                }
                 if (b.type == OBJECT_TYPE.player) {
                     shake(player.direction, 30);
                 }
