@@ -114,8 +114,8 @@ var menus = {
     post: {
         render: () => {
             letterCurve += 0.2;
-            ctx.fillStyle = "rgba(0, 0, 0, .8)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            /* ctx.fillStyle = "rgba(0, 0, 0, .8)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height); */
 
             var text = "Levels complete";
             var size = 5;

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>CharStruck!</title>
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+	<div id="wrap">
+		<img src="favicon.png" id="icon" alt="">
+		<span id="title">'C'HARSTRUCK</span>
+
+
+
+		<span id="description">
+			<b>'C'HARSTRUCK</b> is game developed by Olle Kaiser (Yogsther) as an assignment for a game displayed in
+			nothing
+			but
+			words.
+			In the game, you the player need to make it through a few levels. These levels are occupied by monsters
+			that will fight back. The goal is the complete the levels as fast as possible while taking as little damage,
+			and using as few bullets as possible.
+			The game is playable in the web browser and so far has 3 levels.
+			<br>
+			<br>
+
+			If you would like to know more about how the game was made, please checkout the <a
+				href="https://github.com/Yogsther/CharStruck" target="_blank">repo</a>!
+
+			<br><br>
+			<b>Controlls</b><br>
+			Use WASD to move the player and the arrows to shoot. <span id="special"><a href="javascript:pst()"
+					title="a... secret?!">...pst</a></span>
+
+			<br><br><a href="/game">Play now!</a>
+		</span>
+
+		<img src="img/render.png" id="cover" alt="">
+		<!-- 
+		<div id="charify">
+
+		</div> -->
+
+
+	</div>
+
+	<canvas id="canvas"></canvas>
+	<script src="js/words.js"></script>
+	<script src="js/TextureLoader.js"></script>
+	<script src="js/Alphabet.js"></script>
+	<script src="js/GameObject.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/menu.js"></script>
+</body>
+
+</html>

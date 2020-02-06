@@ -256,6 +256,7 @@ var displayDuration;
 var dispalyColor;
 
 function renderLevelIntro() {
+    if (mapIndex == 0) timer = Date.now();
     letterCurve += 0.2;
     ctx.fillStyle = "rgba(0, 0, 0, .8)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
