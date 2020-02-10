@@ -38,7 +38,7 @@ class TextLeader extends GameObject {
         super(x, 0);
         this.width = textWidth * 6;
         this.height = textWidth * 6;
-        this.color = COLORS.dark;
+
         this.lastStop = -100;
         this.speed = 5;
         this.clearedLane = false;
@@ -47,12 +47,14 @@ class TextLeader extends GameObject {
     }
 
     newWord() {
-        /* this.color =
-            COLORS[
-                Object.keys(COLORS)[
-                    Math.floor(Math.random() * Object.keys(COLORS).length)
-                ]
-            ]; */
+        this.color =
+            selectedColors.length > 0
+                ? COLORS[
+                      selectedColors[
+                          Math.floor(Math.random() * selectedColors.length)
+                      ]
+                  ]
+                : COLORS.dark;
 
         this.wordIndex =
             this.y == 0 ? Math.floor(Math.random() * "CHARSTRUCK".length) : 0;

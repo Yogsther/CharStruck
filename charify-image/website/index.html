@@ -8,6 +8,8 @@
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="shortcut icon" href="favicon.png" type="image/x-icon">
 	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
 </head>
 
 <body>
@@ -42,10 +44,18 @@
 		</span>
 
 		<img src="img/render.png" id="cover" alt="">
-		<!-- 
-		<div id="charify">
 
-		</div> -->
+		<div id="charify">
+			<input type="file" id="file-chooser">
+			<span id="charify-title">Charify your own image!</span>
+			<button id="choose-button">Choose image</button>
+			<span id="file-name">No file choosen</span>
+			<span id="choose-colors">Choose colors</span>
+			<div id="colors"></div>
+			<br>
+			<button id="charify-button" onclick="upload()">Charify image!</button>
+			<span id="status" class=""></span>
+		</div>
 
 
 	</div>
@@ -57,6 +67,7 @@
 	<script src="js/GameObject.js"></script>
 	<script src="js/main.js"></script>
 	<script src="js/menu.js"></script>
+	<script src="js/charify.js"></script>
 </body>
 
 </html>

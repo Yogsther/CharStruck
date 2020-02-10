@@ -24,7 +24,7 @@ body {
 	max-width: 800px;
 	background-color: rgb(14, 14, 14);
 	color: rgb(228, 228, 228);
-
+	padding-bottom: 20px;
 }
 
 #icon {
@@ -47,13 +47,12 @@ img {
 }
 
 #cover {
-	width: 80%;
+	width: 50%;
 	position: relative;
 	display: block;
 	left: 0px;
 	margin: 0 auto;
-	margin-top: -100px;
-	pointer-events: none;
+
 }
 
 #description {
@@ -79,10 +78,80 @@ a:visited {
 #charify {
 	display: block;
 	position: relative;
-	width: 80%;
-	height: 140px;
-	border-radius: 15px;
+	width: calc(100% - 40px);
+	padding-bottom: 20px;
+	border-radius: 5px;
 	background-color: rgb(24, 24, 24);
 	margin: 0 auto;
-	margin-top: 300px;
+	margin-top: 20px;
+}
+
+#charify-title {
+	display: block;
+	position: relative;
+	margin: 15px;
+	top: 15px;
+	font-size: 20px;
+	margin-bottom: 20px;
+}
+
+#choose-button,
+#charify-button {
+	display: inline-block;
+	position: relative;
+	margin: 15px;
+	border-radius: 5px;
+	border: #f91646 2px solid;
+	background: none;
+	color: #f91646;
+	font-size: 16px;
+	padding: 5px;
+	cursor: pointer;
+}
+
+/* #charify-button {
+	display: block;
+} */
+
+button:focus {
+	outline: 0;
+}
+
+#file-chooser {
+	display: none;
+}
+
+#choose-colors {
+	margin: 15px;
+	font-size: 18px;
+	margin-top: 0px;
+	display: block;
+}
+
+#colors {
+	border-radius: 5px;
+	max-width: calc(100% - 40px);
+
+	/* background-color: rgb(17, 17, 17); */
+	margin-left: 20px;
+	display: inline-block;
+}
+
+.color {
+	display: inline-block;
+	width: 50px;
+	height: 50px;
+	margin: 10px;
+	position: relative;
+	border-radius: 100px;
+	cursor: pointer;
+
+}
+
+.selected {
+	box-shadow: 0 0 0pt 5pt rgb(255, 255, 255);
+}
+
+.red {
+	color: #f91646;
 }

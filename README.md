@@ -17,7 +17,12 @@ Projects parts
 ## Cover art made with charify-image
 
 charify-image uses the fonts from the game in different colors and creates a pixelated image
+
 ![](images/cover-art-creation.png)
+
+You can even charify your own image online, just visit the website!
+
+![](images/charify-online.png)
 
 ## AI Pathfinding
 

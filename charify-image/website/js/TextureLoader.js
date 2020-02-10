@@ -27,3 +27,14 @@ const COLORS = {
     gold: textures.gold,
     white: textures.white
 };
+
+const COLOR_CODES = {
+    red: "#f91646",
+    blue: "#5644f3",
+    gold: "#efcb0d",
+    green: "#47e057",
+    purple: "#d62ff6",
+    dark: "#222034",
+    grey: "#575757",
+    white: "#fff"
+};

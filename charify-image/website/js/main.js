@@ -1,3 +1,7 @@
+/**
+ * WEBSITE MAIN, NOT GAME
+ */
+
 const SETTINGS = {
     DEBUG: false,
     LOG_KEYS: false,
