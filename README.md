@@ -35,3 +35,13 @@ For AI Pathfinding, I use A\*. If the player is not visible for the Mob, it will
 By pressing ESC you can open the DEBUG menu. Here you can preview hitboxes, load levels, edit the map, save the map, disable collisions and visualize the pathfinding.
 
 ![](images/debug-sh.png)
+
+## Difficulties
+
+There are three difficulties:
+
+-   EASY, you regain your life as you play.
+-   FAIR, you don't regain any life until you complete a level, then you will regain all life.
+-   HARD is perma death and you never regain health. If you complete this one, (without opening the dev tools) you will unlock an easter egg.
+
+![](images/difficulties.png)
